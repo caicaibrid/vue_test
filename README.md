@@ -1,6 +1,4 @@
-# vue_project
-
-### TodoList
+# vue_project ------ TodoList
 
 > A Vue.js project
 
