@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div{
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="message">
+        <div v-bind:id="true?'aa':'bb'"  v-bind:style="style" v-on:click = "revert()" v-on:mouseleave = "mouseleave()" v-on:mouseenter = "mouseenter()">
+            {{message | toUpperCase}}  {{ message.toUpperCase() }}  {{reverseMessage}}
+        </div>
+
+        <input type="text" v-model="post.aaa" v-on:input = "click()"> {{post}}
+
+        <ul>
+            <first-component></first-component>
+            <second-component></second-component>
+        </ul>
+        <p v-for="item in arrObj" >id:{{item.id}}----text:{{item.text}}</p>
+
+        <three-component v-for="item in arrObj" v-bind:arr="item"></three-component>
+
+        <ul>
+            <template v-for="item in arrObj">
+                <li>{{item.id}}</li>
+                <li>{{item.text}}</li>
+            </template>
+        </ul>
+
+    </div>
+    <hr/>
+    <div id="app-7">
+        <ol>
+            <!-- Now we provide each todo-item with the todo object    -->
+            <!-- it's representing, so that its content can be dynamic -->
+            <li is="todo-item" v-for="item in groceryList" v-bind:todo="item"></li>
+
+            <li is="three-component" v-for="item in groceryList" v-bind:arr="item"></li>
+        </ol>
+    </div>
+    <hr/>
+    <div id="test"></div>
+    <hr/>
+    <div id="app">
+        {{a}} =====
+
+        <input type="text" v-model.number = "number_val"/>  {{number_val}}
+        <input v-model.trim="msg"> {{msg}}
+    </div>
+    <hr/>
+    <div id="appp">
+        firstName : <input type="text" v-model="firstName"/> <br/>
+        lastName : <input type="text" v-model="lastName"/> <br/>
+        {{ fullName }}
+    </div>
+
+
+
+    <div id="todoList">
+        <input type="text" v-model="inputValue" v-on:keyup.enter="addTo" placeholder="input todo"/>
+        <hr/>
+        <ol>
+            <li is="todo-list" v-for="(item,index) in todoList" v-bind:title = "item" v-on:remove="todoList.splice(index,1)"></li>
+        </ol>
+    </div>
+
+    <ul id="component">
+       <li is="test-com" v-for="item in 10" v-bind:item="item"></li>
+    </ul>
+    <div id="page">
+        <input v-model="page_num"/>
+        <ul>
+            <li is="page-component" v-bind:page="page_num"></li>
+        </ul>
+    </div>
+
+    <div id="counter-event-example">
+        <p>{{ total }}</p>
+        <button-counter v-on:increment="incrementTotal"></button-counter>
+        <button-counter v-on:increment="incrementTotal"></button-counter>
+    </div>
+
+    <h5>slot分发</h5>
+
+    <div id="slot">
+        <parent-component></parent-component>
+        <parent1-component></parent1-component>
+    </div>
+
+    <div id="example">
+        <component v-bind:is="currentView">
+
+        </component>
+    </div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script type="text/javascript">
+    var timer = null;
+    window.onscroll = function () {
+        if(timer){
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function () {
+            console.log(1)
+        },2000);
+    }; //　一直定义一直清除
+
+    window.onload= function () {
+        var home = {
+            template:"<p>example example</p>"
+        }
+
+        new Vue({
+            el:"#example",
+            components:{
+                home:home
+            },
+            data:{
+                currentView:"home"
+            }
+        });
+
+
+        Vue.component("parent-component",{
+            template:"<div>" +
+                        "<h2>parentComponent</h2>" +
+                        "<child-component>" +
+                            "<p>需要分发的内容１</p>" +
+                            "<p>需要分发的内容２</p>" +
+                        "</child-component>" +
+                      "</div>"
+        });
+        Vue.component("child-component",{
+            template:"<div>" +
+            "<h2>我是子组件里面的标题　下边市ｓｌｏｔ的分发，如果有分发显示分发内容，没有的话显示ｓｌｏｔ内的内容</h2>" +
+            "<slot>我是没有分发就显示的子内容</slot>" +
+            "</div>"
+        });
+
+        Vue.component("parent1-component",{
+            template:"<div>" +
+            "<h2>parentComponent　根据ｓｌｏｔ　和　ｎａｍｅ匹配需要分发的位置</h2>" +
+            "<child1-component>" +
+            "<p slot='one'>需要分发的内容１</p>" +
+            "<p slot ='two'>需要分发的内容２</p>" +
+            "</child1-component>" +
+            "</div>"
+        });
+        Vue.component("child1-component",{
+            template:"<div>" +
+            "<h2>我是子组件里面的标题　下边市ｓｌｏｔ的分发，如果有分发显示分发内容，没有的话显示ｓｌｏｔ内的内容</h2>" +
+            "<slot>我是没有分发就显示的子内容</slot>" +
+            "<slot name='two'>点点点</slot>"+
+            "<slot name='one'>顶顶顶顶</slot>"+
+            "</div>"
+        });
+
+        new Vue({
+            el:"#slot"
+        })
+        Vue.component('button-counter', {
+            template: '<button v-on:click="increment">{{ counter }}</button>',
+            data: function () {
+                return {
+                    counter: 0
+                }
+            },
+            methods: {
+                increment: function () {
+                    this.counter += 1
+                    this.$emit('increment')
+                }
+            },
+        })
+        new Vue({
+            el: '#counter-event-example',
+            data: {
+                total: 0
+            },
+            methods: {
+                incrementTotal: function () {
+                    this.total += 1
+                }
+            }
+        })
+
+        Vue.component("page-component",{
+            props:["page"],
+            template:"<li>{{page}}</li>"
+        })
+        new Vue({
+            el:"#page",
+            data:{
+                page_num:"page_num"
+            }
+        })
+        Vue.component("test-com",{
+            template:"<li>{{item}}</li>",
+            props:["item"],
+            data:function () {
+                return {}
+            }
+        });
+        new Vue({
+            el:"#component"
+        })
+
+        var child = Vue.extend({
+            template:"<li>" +
+            "组件的定义 Vue.component('组件名','对象申明')" +
+            "组件可以扩展html 封装可重用代码" +
+            "</li>"
+        });
+        Vue.component("three-component",{
+            props:['arr'],
+            template:"<p>{{arr.text}}</p>"
+        });
+        var vm = new Vue({
+            el:"#message",
+            data:{
+                message:"hello",
+                style:{
+                    color:"#f29",
+                    border:"10px solid #000",
+                    background:"blue"
+                },
+                post:{
+                    "aaa":""
+                },
+                arrObj:[{
+                    id:"1",
+                    text:"1"
+                },{
+                    id:"2",
+                    text:"2"
+                },{
+                    id:"3",
+                    text:"3"
+                }]
+            },
+            filters:{
+                toUpperCase:function (str) {
+                    return str.toLocaleUpperCase();
+                }
+            },
+            computed:{
+                reverseMessage:function () {
+                    return this.message.toLocaleUpperCase()
+                }
+            },
+            methods:{
+                revert:function () {
+                    this.message =this.message.split("").reverse().join("")
+                },
+                click:function () {
+                    console.log("click")
+                    var node = document.createTextNode(JSON.stringify("appendChild 必须插入一个node节点，所以需要创建一个textNode"));
+                    document.getElementById("message").appendChild(node)
+                },
+                mouseenter:function () {
+                    console.log("mouseenter")
+                },
+                mouseleave:function () {
+                    console.log("mouseleave")
+                }
+            },
+            components:{
+                "second-component":{
+                    template:"<div>second-component</div>"
+                },
+                "first-component":child
+            }
+        });
+        var profile = Vue.extend({
+            template:"<p>{{firstName}} {{lastName}} aka {{alias}}</p>",
+            data:function () {
+                return {
+                    firstName:"cai",
+                    lastName:"cai",
+                    alias:"哈哈哈"
+                }
+            }
+        });
+        new profile().$mount("#test");
+
+        var app = new Vue({
+            el:"#app",
+            data:{
+                a:1,
+                number_val:"",
+                msg:" msg "
+            },
+            created:function () {
+                console.log(++this.a+"created")
+
+            },
+            updated:function () {
+                console.log(++this.a +"updated")
+            }
+        });
+
+        setTimeout(function () {
+            vm.message = "hello1";
+            vm.style = {
+                color:"#fff",
+                border:"10px solid blue",
+                background:"#000"
+            };
+        },3000);
+
+
+
+        Vue.component('todo-item', {
+            props: ['todo'],
+            template: '<li>{{ todo.text }}</li>'
+        });
+
+        var app7 = new Vue({
+            el: '#app-7',
+            data: {
+                groceryList: [
+                    { text: 'Vegetables' },
+                    { text: 'Cheese' },
+                    { text: 'Whatever else humans are supposed to eat' }
+                ]
+            }
+        })
+        var appp = new Vue({
+            el:"#appp",
+            data:{
+                firstName:"FOO",
+                lastName:"BAR"
+            },
+            computed:{
+                fullName:function () {
+                    return this.firstName +"---------"+this.lastName;
+                }
+            }
+        })
+        Vue.component("todo-list",{
+            props:["title"],
+            template:"<li>{{title}} <button v-on:click='$emit(\"remove\")'>x</button></li>"
+        })
+        var todoList = new Vue({
+            el:"#todoList",
+            data:{
+                inputValue:"",
+                todoList:[
+                    "first title",
+                    "second title"
+                ]
+            },
+            methods:{
+                addTo:function () {
+                    this.todoList.push(this.inputValue);
+                    this.inputValue = "";
+                }
+            }
+        })
+
+    }
+</script>
+</html>
